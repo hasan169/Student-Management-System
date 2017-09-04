@@ -1,0 +1,30 @@
+<?php
+	$conn = mysql_connect("localhost","root","");
+	session_start();
+	$id = $_SESSION['student_id'];
+	$course = $_POST["course"];
+	$teacher = $_POST["teacher"];
+	$sql = "select * from advising";
+	mysql_select_db('student_management_system');	
+	$retval = mysql_query($sql);
+	$row = mysql_fetch_array($retval);
+	$semester = $row["semester_name"];
+	$year = $row["semester_year"];
+	$sql = "insert into selected_course values ('$semester',$year,'$id','$teacher','$course')";
+	mysql_select_db('student_management_system');
+	$ret = mysql_query($sql);
+	$sql = "insert into result values ('$semester',$year,'$id','$course',0,0,0)";
+	mysql_select_db('student_management_system');
+	$ret = mysql_query($sql);
+	$sql = "select total_seat from course_teacher where teacher_id = '$teacher' and courseno = '$course' and semester_name ='$semester' and semester_year = $year";
+	mysql_select_db('student_management_system');
+	$ret = mysql_query($sql);
+	$row = mysql_fetch_array($ret);
+	$total = $row["total_seat"];
+	$total = $total - 1;
+	$sql = "update course_teacher set total_seat = $total where teacher_id = '$teacher' and courseno = '$course' and semester_name ='$semester' and semester_year = $year";
+	mysql_select_db('student_management_system');
+	$ret = mysql_query($sql);
+	echo json_encode("1");
+	exit();	
+?>
